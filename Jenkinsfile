@@ -31,6 +31,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'TODO: Add test (Jest or Mocha)'
+                sh 'npm test -- --watchAll=false'
             }
         }
 
@@ -54,8 +55,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'node app.js'
-                sh '^C'
+                echo 'Deploying application...'
             }
         }
     }
