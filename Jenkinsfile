@@ -66,15 +66,18 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        # Start the application
-                        node app.js > app.log 2>&1 &
+                        # Kill any existing process on port 3000
+                        pkill -f "node app.js" || true
+                        
+                        # Start the application with explicit host binding
+                        HOST=0.0.0.0 node app.js > app.log 2>&1 &
                         echo $! > app.pid
                         
                         # Give the app some time to start
                         sleep 5
                         
-                        # Check if process is still running
-                        if ps -p $(cat app.pid) > /dev/null; then
+                        # Check if process is still running and port is bound
+                        if ps -p $(cat app.pid) > /dev/null && netstat -tulpn | grep :3000 > /dev/null; then
                             echo "Application started successfully"
                             cat app.log
                         else
