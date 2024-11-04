@@ -42,7 +42,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                sh 'npm start' // Can comment this out
+                // sh 'npm start' // Can comment this out
             }
         }
 
