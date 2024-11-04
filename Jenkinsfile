@@ -25,7 +25,7 @@ pipeline {
         stage('Test') {
             steps {
                 // Run tests
-                echo 'No tests specified, skipping this stage'
+                echo 'TODO: Add test (Jest or Mocha)'
             }
         }
 
@@ -33,16 +33,20 @@ pipeline {
             steps {
                 // Build the application (optional for Node.js, but placeholder in case needed)
                 echo 'Building the application...'
+                echo 'TODO: Add monitoring and logging to the pipeline (Prometheus and Grafana (for metrics) or ELK Stack (Elasticsearch, Logstash, and Kibana) for logs)'
             }
         }
 
         stage('Security Check') {
             steps {
-                // Run a security scan (e.g., using a tool like Snyk)
-                sh 'npm install -g snyk'
-                sh 'snyk test || true'
+                // Run a security scan
+                echo 'TODO: Implement security check (SonarQube, OWASP Dependency-Check, or Snyk)'
+                // sh 'npm install -g snyk'
+                // sh 'snyk test || true'
             }
         }
+
+        //TODO: Implement IaC
 
         stage('Deploy') {
             steps {
