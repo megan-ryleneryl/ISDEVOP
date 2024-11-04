@@ -1,0 +1,115 @@
+
+<div class="ride-list-container">
+  <div class="ride-list">
+
+    <h1>Available Rides</h1>
+
+    {{#if rides.length}}
+      {{#each rides}}
+      <a href="/booking/{{rideID}}" onclick="console.log('{{rideID}}')">
+            <div class="ride-info-body">
+                <div class="ride-info-body-container">
+                  <div class="pickupdropoff">
+                    <div class="pickup">
+                      <div class="ride-info-body-time">
+                        <p> {{formatTime departureTime.hour departureTime.minute}}</p>
+                        <img src="/img/route.svg" alt="route">
+                      </div>
+                      <p>{{pickupPoint}}</p>
+                    </div>
+                    <div class="dropoff">
+                      <div class="ride-info-body-time">
+                        <p><strong></strong> {{formatTime arrivalTime.hour arrivalTime.minute}}</p>
+                      </div>
+                      <p>{{dropoffPoint}}</p>
+                    </div>
+                  </div>
+                    <h2><strong></strong> ₱{{price}}</h2>
+                </div>
+
+                <br>
+                <hr width="100%" size="3" color="gray">
+
+                <div class="ride-info-footer">
+                  <div class="ids">
+                    <img src="{{profilePicture}}" alt="Driver profile picture" class="driver-photo">
+                    <p><strong>{{driverName}}</strong></p>
+                    <p><strong>Seats:</strong> {{numSeats}}</p>
+                  </div>
+                  <div class="ridesched">
+                    {{#each (array 'sunday' 'monday' 'tuesday' 'wednesday' 'thursday' 'friday' 'saturday') as |day|}}
+                      <div class="day-container">
+                        <input type="checkbox" id="{{day}}" name="availableDays" value="{{day}}" {{#if (includes day ../availableDays)}}checked{{/if}} disabled>
+                        <label for="{{day}}">
+                          {{#if (eq day 'sunday')}}S{{/if}}
+                          {{#if (eq day 'monday')}}M{{/if}}
+                          {{#if (eq day 'tuesday')}}T{{/if}}
+                          {{#if (eq day 'wednesday')}}W{{/if}}
+                          {{#if (eq day 'thursday')}}H{{/if}}
+                          {{#if (eq day 'friday')}}F{{/if}}
+                          {{#if (eq day 'saturday')}}S{{/if}}
+                        </label>
+                      </div>
+                    {{/each}}
+                  </div>
+                </div>
+              </div>
+      </a>
+      {{/each}}
+    {{else}}
+      <p class="no-rides">No rides available at the moment.</p>
+    {{/if}}
+  </div>
+
+  <div class="ride-destination">
+    <img src="/img/DLSU.jpg" alt="DLSU">
+      <div class="destination-info">
+        <p><strong>De La Salle University</strong></p>
+        <p>2401 Taft Ave, Malate, Manila</p>
+      </div>
+  </div>
+</div>
+{{!-- 
+<style>
+  
+  .ride-item {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .ride-main-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .ride-time, .ride-route {
+    display: flex;
+    align-items: center;
+  }
+  .arrow {
+    margin: 0 10px;
+    color: #777;
+  }
+  .ride-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ride-driver, .ride-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .driver-rating {
+    color: #ffc107;
+  }
+  .price {
+    font-weight: bold;
+    color: #28a745;
+  }
+  .no-rides {
+    text-align: center;
+    color: #777;
+  }
+</style> --}}

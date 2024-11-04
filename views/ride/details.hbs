@@ -1,0 +1,151 @@
+<div class="ride-details">
+  <div class="ride-info">
+    <h2>Ride Details</h1>
+
+    {{#if messages.error}}
+      <div class="alert alert-danger">{{messages.error}}</div>
+    {{/if}}
+    {{#if messages.success}}
+      <div class="alert alert-success">{{messages.success}}</div>
+    {{/if}}
+    {{!-- <h1>Ride Information</h2> --}}
+    <div class="ride-info-header">          
+      <p><strong>Ride Type:</strong> 
+        {{#if (eq ride.rideType "toUniversity")}}
+          From Home to University
+        {{else}}
+          From University to Home
+        {{/if}}
+      </p>
+
+    </div>
+
+      <div class="ride-info-body">
+        <div class="ride-info-body-container">
+          <div class="pickupdropoff">
+            <div class="pickup">
+              <div class="ride-info-body-time">
+                <p><strong>Time:</strong> {{formatTime ride.departureTime.hour ride.departureTime.minute}}</p>
+                <img src="/img/route.svg" alt="route">
+              </div>
+              <p><strong>Pickup Point:</strong> {{ride.pickupPoint}}</p>
+            </div>
+            <div class="dropoff">
+              <div class="ride-info-body-time">
+                <p><strong></strong> {{formatTime ride.arrivalTime.hour ride.arrivalTime.minute}}</p>
+              </div>
+              <p><strong>Dropoff Point:</strong> {{ride.dropoffPoint}}</p>
+            </div>
+          </div>
+            <h2><strong></strong> ₱{{ride.price}}</h2>
+        </div>
+
+        <br>
+        <hr width="100%" size="3" color="gray">
+
+        <div class="ride-info-footer">
+          <div class="ids">
+            <p><strong>Ride ID:</strong> {{ride.rideID}}</p>
+            <p><strong>Driver ID:</strong> {{ride.driverID}}</p>
+            <p><strong>Seats:</strong> {{ride.numSeats}}</p>
+          </div>
+          <div class="ridesched">
+          {{!-- <p><strong>Available Days:</strong></p> --}}
+            {{#each (array 'sunday' 'monday' 'tuesday' 'wednesday' 'thursday' 'friday' 'saturday') as |day|}}
+              <div class="day-container">
+                <input type="checkbox" id="{{day}}" name="availableDays" value="{{day}}" {{#if (includes day ../ride.availableDays)}}checked{{/if}} disabled>
+                <label for="{{day}}">
+                  {{#if (eq day 'sunday')}}S{{/if}}
+                  {{#if (eq day 'monday')}}M{{/if}}
+                  {{#if (eq day 'tuesday')}}T{{/if}}
+                  {{#if (eq day 'wednesday')}}W{{/if}}
+                  {{#if (eq day 'thursday')}}H{{/if}}
+                  {{#if (eq day 'friday')}}F{{/if}}
+                  {{#if (eq day 'saturday')}}S{{/if}}
+                </label>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+
+
+    {{#if ride.route}}
+      <p><strong>Route:</strong> {{ride.route}}</p>
+    {{/if}}
+    {{#if ride.pickupAreas.length}}
+      <p><strong>Additional Pickup Areas:</strong> {{join ride.pickupAreas ", "}}</p>
+    {{/if}}
+    
+    
+    <p><strong>Status:</strong> {{ride.status}}</p>
+</div>
+      
+        <div class="bookings">
+          <h2>Bookings</h2>
+          {{#if bookings.length}}
+            <table>
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Passenger ID</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each bookings}}
+                  <tr>
+                    <td>{{this.bookingID}}</td>
+                    <td>{{this.passengerID}}</td>
+                    <td>{{formatDate this.date}}</td>
+                    <td>{{this.status}}</td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+          {{else}}
+            <p>No bookings for this ride yet.</p>
+          {{/if}}
+        </div>
+      
+        {{#if (eq user.userID ride.driverID)}}
+          <div class="ride-actions">
+            <a href="/ride/{{ride.rideID}}/edit" class="btn btn-primary">Edit Ride</a>
+            <a href="/ride/new" class="btn btn-primary">Create Another Ride</a>
+            {{#if (eq ride.status 'active')}}
+                <button class="btn btn-danger" data-ride-id="{{this.rideID}}">Deactivate Ride</button>
+            {{/if}}
+          </div>
+        {{/if}}
+      </div>
+
+<script>
+
+    document.querySelectorAll('.btn-danger').forEach(button => {
+        button.addEventListener('click', function() {
+            const rideId = {{ride.rideID}}
+            if (confirm('Are you sure you want to deactivate this ride?')) {
+                fetch(`/ride/${rideId}/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            }
+        });
+    });
+</script>
