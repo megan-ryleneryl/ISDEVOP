@@ -76,12 +76,19 @@ pipeline {
                         # Give the app some time to start
                         sleep 5
                         
-                        # Check if process is still running and port is bound
-                        if ps -p $(cat app.pid) > /dev/null && netstat -tulpn | grep :3000 > /dev/null; then
-                            echo "Application started successfully"
-                            cat app.log
+                        # Check if process is running
+                        if ps -p $(cat app.pid) > /dev/null; then
+                            # Check app.log for successful startup message
+                            if grep "App started. Listening on port" app.log; then
+                                echo "Application started successfully"
+                                cat app.log
+                            else
+                                echo "Application failed to start properly"
+                                cat app.log
+                                exit 1
+                            fi
                         else
-                            echo "Application failed to start"
+                            echo "Application process not found"
                             cat app.log
                             exit 1
                         fi
