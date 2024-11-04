@@ -22,6 +22,13 @@ pipeline {
             }
         }
 
+        // Reinstall bcrypt specifically for Jenkins environment
+        stage('Reinstall bcrypt') {
+            steps {
+                sh 'npm rebuild bcrypt --build-from-source'
+            }
+        }
+
         stage('Test') {
             steps {
                 // Run tests
@@ -40,7 +47,7 @@ pipeline {
         stage('Security Check') {
             steps {
                 // Run a security scan
-                echo 'TODO: Implement security check (SonarQube, OWASP Dependency-Check, or Snyk)'
+                echo 'TODO: Implement security check (Selenium)'
                 // sh 'npm install -g snyk'
                 // sh 'snyk test || true'
             }
