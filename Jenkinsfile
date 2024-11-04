@@ -28,16 +28,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                timeout(time: 5, unit: 'MINUTES') {
-                    sh 'npm install --no-audit'
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo 'Building application...'
-                sh 'npm start' // Can comment this out
+                sh 'npm install --no-audit'
             }
         }
 
@@ -51,6 +42,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
+                sh 'npm start' // Can comment this out
             }
         }
 
