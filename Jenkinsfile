@@ -22,10 +22,16 @@ pipeline {
             }
         }
 
+        stage('Audit Fix') {
+            steps {
+                sh 'npm audit fix'
+            }
+        }
+
         // Reinstall bcrypt specifically for Jenkins environment
         stage('Reinstall bcrypt') {
             steps {
-                sh 'npm rebuild bcrypt --build-from-source'
+                sh 'sudo npm rebuild bcrypt --build-from-source'
             }
         }
 
