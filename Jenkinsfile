@@ -10,8 +10,6 @@ pipeline {
         MONGO_PASSWORD = '12345'
         MONGO_DB = 'itisdev-mvp'
         MONGO_URI = "mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@itisdev-mvp.jary1la.mongodb.net/${MONGO_DB}"
-        PORT = '3000'
-        NODE_OPTIONS = '--no-warnings'
     }
 
     stages {
@@ -36,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Audit Fix') {
+        stage('Build') {
             steps {
                 echo 'Building application...'
                 sh 'npm start' // Can comment this out
@@ -46,6 +44,7 @@ pipeline {
         stage('Test') {
             steps {
                 // sh 'npm test'
+                echo 'TODO: Prepare tests'
             }
         }
 
