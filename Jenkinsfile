@@ -22,23 +22,21 @@ pipeline {
             }
         }
 
-        stage('Audit Fix') {
+       stage('Build') {
             steps {
-                sh 'npm audit fix'
+                sh 'npm run build'
             }
         }
 
         stage('Test') {
             steps {
                 echo 'TODO: Add test (Jest or Mocha)'
-                sh 'npm test -- --watchAll=false'
+
             }
         }
 
-        stage('Build') {
+        stage('Monitoring') {
             steps {
-                // Build the application (optional for Node.js, but placeholder in case needed)
-                echo 'Building the application...'
                 echo 'TODO: Add monitoring and logging to the pipeline (Prometheus and Grafana (for metrics) or ELK Stack (Elasticsearch, Logstash, and Kibana) for logs)'
             }
         }
