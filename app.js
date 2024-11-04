@@ -13,17 +13,19 @@ const User = require('./models/User'); // Import the User model
  * 12345 is the password
  * itisdev-mvp is the database name
  */
-const dbURI = 'mongodb+srv://admin:12345@itisdev-mvp.jary1la.mongodb.net/itisdev-mvp'; 
+const dbURI = process.env.MONGO_URI || 'mongodb+srv://admin:12345@itisdev-mvp.jary1la.mongodb.net/itisdev-mvp';
+const PORT = process.env.PORT || 3000;
+
 mongoose.connect(dbURI)
     .then((result) => {
         console.log("App connected to MongoDB Atlas itisdev-mvp database.");
-        /* If the DB connection was successful, listen for requests on localhost:3000 */
-        app.listen(3000, () => {
-            console.log("App started. Listening on port 3000.");
+        /* Listen on all interfaces (0.0.0.0) instead of just localhost */
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`App started. Listening on port ${PORT}`);
         });
     })
     .catch((err) => {
-        console.log(err);
+        console.log("MongoDB connection error:", err);
     });
 
 // Imported for sessions
