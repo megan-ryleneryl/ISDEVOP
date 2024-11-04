@@ -54,12 +54,8 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                // sh 'node app.js' 
-
-                // Start the application
-                def appProcess = sh(script: 'node app.js & echo $!', returnStdout: true).trim()
-                sleep(time: 10, unit: 'SECONDS')
-                sh "kill ${appProcess}"
+                sh 'node app.js'
+                sh '^C'
             }
         }
     }
