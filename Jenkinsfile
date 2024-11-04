@@ -25,13 +25,13 @@ pipeline {
        stage('Build') {
             steps {
                 echo 'Building application...'
+                sh 'npm start' // Can comment this out
             }
         }
 
         stage('Test') {
             steps {
-                echo 'TODO: Add test (Jest or Mocha)'
-
+                // sh 'npm test'
             }
         }
 

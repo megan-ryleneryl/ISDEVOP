@@ -1,36 +1,16 @@
 /* Dependencies */
-const express = require('express'); // Import Express, allows you to create a server and routes
-const exphbs = require('express-handlebars'); // Import Express-Handlebars, allows you to create views
-const mongoose = require('mongoose'); // Import Mongoose, allows you to connect to MongoDB
+const express = require('express'); 
+const exphbs = require('express-handlebars'); 
 const bodyParser = require('body-parser');
-const bcrypt = require('bcryptjs'); // For hashing passwords
-const User = require('./models/User'); // Import the User model
-
-
-/* Connect to MongoDB and then Listen for Requests */
-/**
- * admin is the username
- * 12345 is the password
- * itisdev-mvp is the database name
- */
-const dbURI = 'mongodb+srv://admin:12345@itisdev-mvp.jary1la.mongodb.net/itisdev-mvp'; 
-mongoose.connect(dbURI)
-    .then((result) => {
-        console.log("App connected to MongoDB Atlas itisdev-mvp database.");
-        /* If the DB connection was successful, listen for requests on localhost:3000 */
-        app.listen(3000, () => {
-            console.log("App started. Listening on port 3000.");
-        });
-    })
-    .catch((err) => {
-        console.log(err);
-    });
-
-// Imported for sessions
+const bcrypt = require('bcryptjs'); 
+const User = require('./models/User');
+const University = require('./models/University');
+const City = require('./models/City');
 const passport = require('passport');
 const flash = require('express-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
+const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 
 const initializePassport = require('./passport-config.js');
@@ -51,7 +31,6 @@ require('./models/Booking');
 require('./models/University');
 require('./models/City');
 
-
 /* Initialize Express App */
 const app = express();
 
@@ -59,6 +38,7 @@ const app = express();
 app.use(express.static(__dirname + "/public")); // Set static folder
 app.use(express.urlencoded({ extended: true })); // Allows you to access req.body for POST routes
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 
 // Use Handlebars as the view engine
 const hbs = exphbs.create({
@@ -151,51 +131,26 @@ const hbs = exphbs.create({
     }
     
 });
-
-app.use(express.json());
 app.engine("hbs", hbs.engine); // Inform the handlebars engine that file extension to read is .hbs
 app.set("view engine", "hbs"); // Set express' default file extension for views as .hbs
 app.set("views", "./views"); // Set the directory for the views
+app.use(methodOverride('_method')); // To allow the POST logout form to become a DELETE request
 
-// Use sessions
-app.use(flash());
+// Function to set up sessions
 app.use(session({
     secret: 'CKA8mqzpyGEuQRCZHJHhK39qCbtxYwu8',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({ 
-        mongoUrl: dbURI,
-        collectionName: 'sessions' // Optional: specify the collection name
+    store: MongoStore.create({
+        mongoUrl: 'mongodb+srv://admin:12345@itisdev-mvp.jary1la.mongodb.net/itisdev-mvp',
+        collectionName: 'sessions'
     }),
-    cookie: { 
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
+    cookie: { maxAge: 24 * 60 * 60 * 1000 } // 24 hours
 }));
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use(methodOverride('_method')); // To allow the POST logout form to become a DELETE request
-
-// Middleware to check and refresh session
-app.use((req, res, next) => {
-    if (req.session.cookie.maxAge && req.session.cookie.maxAge < 10 * 60 * 1000) {
-        req.session.cookie.maxAge = 24 * 60 * 60 * 1000; // Refresh to 24 hours
-    }
-    next();
-});
 
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
-
-// Middleware to log session info (for debugging)
-app.use((req, res, next) => {
-    console.log('Session ID:', req.sessionID);
-    console.log('Is Authenticated:', req.isAuthenticated());
-    next();
-});
-
-
 
 // App Routes
 app.use('/auth', authRoutes); // Use the authRoutes module for all routes starting with /auth
@@ -204,9 +159,6 @@ app.use('/ride', rideRoutes); // Use the rideRoutes module for all routes starti
 app.use('/booking', bookingRoutes); // Use the bookingRoutes module for all routes starting with /booking
 app.use('/review', reviewRoutes); // Use the reviewRoutes module for all routes starting with /review
 app.use('/chat', chatRoutes); // Use the chatRoutes module for all routes starting with /chat
-
-const University = require('./models/University');
-const City = require('./models/City');
 
 app.use((req, res, next) => {
     res.locals.user = req.user || null; // Make user available in all views
@@ -219,10 +171,6 @@ app.get('/', (req, res) => {
         .then(([universities, cities]) => {
             const universityNames = universities.map(university => university.name);
             const cityNames = cities.map(city => city.name);
-
-            // Display in cmd
-            console.log('Universities:', universityNames);
-            console.log('Cities:', cityNames);
 
             res.render('index', {
                 title: "Uniride",
@@ -239,7 +187,6 @@ app.get('/', (req, res) => {
         });
 });
 
-
 app.post('/login', 
     passport.authenticate('local', {
         failureRedirect: '/login-failed',
@@ -254,7 +201,6 @@ app.post('/login',
         res.redirect('/'); 
     }
 );
-
 
 app.get('/login', (req, res) => {
     if(req.user){
@@ -278,27 +224,4 @@ app.get('/login-failed', (req, res) => {
     });
 });
 
-
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) { // Assuming you are using Passport.js
-        res.locals.user = req.user;
-        return next();
-    }
-    res.redirect('/login');
-}
-
-
-const cron = require('node-cron');
-const { autoRejectDueBookings } = require('./controllers/bookingController');
-
-// // Schedule the task to run every hour
-// cron.schedule('0 * * * *', () => {
-//     console.log('Running auto-reject task');
-//     autoRejectDueBookings();
-// });
-
-// Scheduled Task Tester (run tasks per minute)
-cron.schedule('* * * * *', () => {
-    // console.log('Running auto-reject task');
-    autoRejectDueBookings();
-}); 
+module.exports = app;

@@ -37,7 +37,6 @@ router.get('/register', (req, res) => {
     });
 });
 
-
 router.post('/new', upload.fields([{ name: 'profilePicture' }, { name: 'enrollmentProof' }]), (req, res) => {
     authController.uploadUser(req, res);
     console.log('Request files:', req.files); // Debugging: Check the request files
