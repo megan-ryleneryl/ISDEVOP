@@ -316,7 +316,7 @@ async function driverDashboard(req, res) {
         await booking.save();
     }
   
-    console.log(`Auto-rejected ${dueBookings.length} due bookings`);
+    // console.log(`Auto-rejected ${dueBookings.length} due bookings`);
   }
 
   async function startBooking(req, res) {

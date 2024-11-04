@@ -299,6 +299,6 @@ const { autoRejectDueBookings } = require('./controllers/bookingController');
 
 // Scheduled Task Tester (run tasks per minute)
 cron.schedule('* * * * *', () => {
-    console.log('Running auto-reject task');
+    // console.log('Running auto-reject task');
     autoRejectDueBookings();
 }); 

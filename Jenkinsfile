@@ -18,7 +18,7 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install' // Install project dependencies
+                sh 'npm install'
             }
         }
 
@@ -30,7 +30,6 @@ pipeline {
 
         stage('Test') {
             steps {
-                // Run tests
                 echo 'TODO: Add test (Jest or Mocha)'
             }
         }
@@ -45,8 +44,7 @@ pipeline {
 
         stage('Security Check') {
             steps {
-                // Run a security scan
-                echo 'TODO: Implement security check (Selenium)'
+                echo 'TODO: Implement security check (Selenium, SonarQube, OWASP Dependency-Check, or Snyk)'
                 // sh 'npm install -g snyk'
                 // sh 'snyk test || true'
             }
@@ -56,7 +54,12 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'node app.js' // Start the application
+                // sh 'node app.js' 
+
+                // Start the application
+                def appProcess = sh(script: 'node app.js & echo $!', returnStdout: true).trim()
+                sleep(time: 10, unit: 'SECONDS')
+                sh "kill ${appProcess}"
             }
         }
     }
