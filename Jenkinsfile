@@ -1,8 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS'
+    }
+
     environment {
-        // Set MongoDB credentials as environment variables
         MONGO_USERNAME = 'admin'
         MONGO_PASSWORD = '12345'
         MONGO_DB = 'itisdev-mvp'
@@ -13,7 +16,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/megan-ryleneryl/ISDEVOP.git' // Pull the code from the GitHub repository
+                git 'https://github.com/megan-ryleneryl/ISDEVOP.git'
             }
         }
 
@@ -37,49 +40,42 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Build the application (optional for Node.js, but placeholder in case needed)
                 echo 'Building the application...'
-                echo 'TODO: Add monitoring and logging to the pipeline (Prometheus and Grafana (for metrics) or ELK Stack (Elasticsearch, Logstash, and Kibana) for logs)'
             }
         }
 
         stage('Security Check') {
             steps {
-                echo 'TODO: Implement security check (Selenium, SonarQube, OWASP Dependency-Check, or Snyk)'
-                // sh 'npm install -g snyk'
-                // sh 'snyk test || true'
+                echo 'TODO: Implement security check'
             }
         }
 
         stage('Deploy') {
             steps {
                 script {
-                    // Kill any existing process running on port 3000
+                    // First, try to kill existing process
                     sh '''
-                        if lsof -ti:3000; then
-                            lsof -ti:3000 | xargs kill -9
+                        if command -v lsof >/dev/null 2>&1; then
+                            if lsof -ti:3000; then
+                                lsof -ti:3000 | xargs kill -9
+                            fi
                         fi
                     '''
                     
-                    // Start the application in the background with proper logging
+                    // Start the application with proper logging
                     sh '''
-                        nohup node app.js > app.log 2>&1 &
+                        npm start > app.log 2>&1 &
                         echo $! > app.pid
+                        sleep 10
                         
-                        # Wait for the application to start (max 30 seconds)
-                        for i in {1..30}; do
-                            if grep "App started. Listening on port 3000" app.log; then
-                                echo "Application started successfully"
-                                exit 0
-                            fi
-                            sleep 1
-                        done
-                        
-                        # Check if process is still running
                         if ! ps -p $(cat app.pid) > /dev/null; then
                             echo "Application failed to start"
+                            cat app.log
                             exit 1
                         fi
+                        
+                        echo "Application started successfully"
+                        cat app.log
                     '''
                 }
             }
@@ -88,7 +84,6 @@ pipeline {
 
     post {
         failure {
-            // Clean up in case of failure
             sh '''
                 if [ -f app.pid ]; then
                     kill -9 $(cat app.pid) || true
@@ -97,7 +92,6 @@ pipeline {
             '''
         }
         always {
-            // Perform actions after the pipeline completes
             echo 'Pipeline finished!'
         }
     }
