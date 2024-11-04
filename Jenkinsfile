@@ -30,16 +30,16 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                timeout(time: 5, unit: 'MINUTES') {  // Add timeout
-                    sh 'npm install --no-audit'  // Skip audit during install
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh 'npm install --no-audit'
                 }
             }
         }
 
         stage('Audit Fix') {
             steps {
-                timeout(time: 5, unit: 'MINUTES') {  // Add timeout
-                    sh 'npm audit fix --force || true'  // Continue even if audit fix fails
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh 'npm audit fix --force || true'
                 }
             }
         }
@@ -65,29 +65,23 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // First, try to kill existing process
                     sh '''
-                        if command -v lsof >/dev/null 2>&1; then
-                            if lsof -ti:3000; then
-                                lsof -ti:3000 | xargs kill -9
-                            fi
-                        fi
-                    '''
-                    
-                    // Start the application with proper logging
-                    sh '''
-                        npm start > app.log 2>&1 &
+                        # Start the application
+                        node app.js > app.log 2>&1 &
                         echo $! > app.pid
-                        sleep 10
                         
-                        if ! ps -p $(cat app.pid) > /dev/null; then
+                        # Give the app some time to start
+                        sleep 5
+                        
+                        # Check if process is still running
+                        if ps -p $(cat app.pid) > /dev/null; then
+                            echo "Application started successfully"
+                            cat app.log
+                        else
                             echo "Application failed to start"
                             cat app.log
                             exit 1
                         fi
-                        
-                        echo "Application started successfully"
-                        cat app.log
                     '''
                 }
             }
@@ -98,8 +92,9 @@ pipeline {
         failure {
             sh '''
                 if [ -f app.pid ]; then
-                    kill -9 $(cat app.pid) || true
+                    pid=$(cat app.pid)
                     rm app.pid
+                    kill -9 $pid || true
                 fi
             '''
         }
