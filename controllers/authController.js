@@ -1,5 +1,5 @@
 /* Import Models */
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const path = require('path');
 const User = require('../models/User'); // Adjust the path as necessary
 

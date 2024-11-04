@@ -19,10 +19,10 @@ npm install express-flash
 npm install method-override
 npm install passport
 npm install passport-local
-npm install bcrypt
+npm install bcryptjs
 
 ===========RUN COMMAND============
 node app.js
 
 ============MAIN GITHUB LINK============
-https://github.com/megan-ryleneryl/ITISDEV.git
+https://github.com/megan-ryleneryl/ISDEVOP.git

@@ -28,19 +28,6 @@ pipeline {
             }
         }
 
-        stage('Set Permissions') {
-            steps {
-                sh 'chmod -R 755 node_modules'
-            }
-        }
-
-        // Reinstall bcrypt specifically for Jenkins environment
-        stage('Reinstall bcrypt') {
-            steps {
-                sh 'sudo npm rebuild bcrypt --build-from-source'
-            }
-        }
-
         stage('Test') {
             steps {
                 // Run tests

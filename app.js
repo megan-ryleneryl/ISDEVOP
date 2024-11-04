@@ -3,7 +3,7 @@ const express = require('express'); // Import Express, allows you to create a se
 const exphbs = require('express-handlebars'); // Import Express-Handlebars, allows you to create views
 const mongoose = require('mongoose'); // Import Mongoose, allows you to connect to MongoDB
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt'); // For hashing passwords
+const bcrypt = require('bcryptjs'); // For hashing passwords
 const User = require('./models/User'); // Import the User model
 
 
