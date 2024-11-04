@@ -28,6 +28,12 @@ pipeline {
             }
         }
 
+        stage('Set Permissions') {
+            steps {
+                sh 'chmod -R 755 node_modules'
+            }
+        }
+
         // Reinstall bcrypt specifically for Jenkins environment
         stage('Reinstall bcrypt') {
             steps {
